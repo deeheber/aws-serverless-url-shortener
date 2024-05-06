@@ -77,7 +77,10 @@ export class AwsServerlessUrlShortenerStack extends Stack {
     const getIntegration = new LambdaIntegration(getFunction)
     const postIntegration = new LambdaIntegration(postFunction)
 
-    api.root.addMethod('GET', getIntegration)
+    // GET /{shortId}
+    const item = api.root.addResource('{shortId}')
+    item.addMethod('GET', getIntegration)
+    // POST /
     api.root.addMethod('POST', postIntegration)
   }
 }

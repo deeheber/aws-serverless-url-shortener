@@ -44,7 +44,7 @@ This endpoint is used to create a new shortened URL. In the Body.url feed it the
 
 It will return the shortened version of the URL.
 
-2. GET <URL>
+2. GET <URL>/{shortId}
 
 This endpoint is used to redirect a shortned URL to the long URL.
 
