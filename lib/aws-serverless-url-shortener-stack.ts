@@ -66,6 +66,11 @@ export class AwsServerlessUrlShortenerStack extends Stack {
 
     // API Gateway
     const api = new RestApi(this, `${this.id}-api`, {
+      // TODO uncomment to enable CORS
+      // defaultCorsPreflightOptions: {
+      //   allowOrigins: ['*'],
+      //   allowMethods: ['GET', 'POST'],
+      // },
       restApiName: `${this.id}-api`,
     })
 
