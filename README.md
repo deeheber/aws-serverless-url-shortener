@@ -30,11 +30,13 @@ This repo contains the AWS cloud resource definitions and code needed to create 
 
 ### Usage
 
+### API Gateway
+
 Get the URL for your API Gateway from the console output post deploy or from the CloudFormation stack outputs.
 
 **Note:** If using this in the "real world", we'd ideally want to map the API Gateway to a URL to actually make this a shorter URL so the shortcut makes more sense.
 
-There are two endpoints you can interact with.
+There are two endpoints you can interact with using something like [curl](https://curl.se/) or [Postman](https://www.postman.com/)
 
 1. POST <URL>
 
@@ -48,6 +50,12 @@ This endpoint is used to redirect a shortned URL to the long URL.
 
 If it does not exist in the DynamoDB table, a 404 error will be returned.
 
+### DynamoDB
+
+TODO add into about DDB main table + GSI schema
+
 ### Cleanup
 
-If you want to delete the resources created by this project, run `npm run destroy`. Delete the secret that you created in the Secrets Manager console.
+If you want to delete the resources created by this project, run `npm run destroy`.
+
+Everything in this stack is considered Serverless, so unless you have a lot of usage and/or content in the DynamoDB table this will likely remain in the AWS free tier.
