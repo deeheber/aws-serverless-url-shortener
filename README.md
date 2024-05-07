@@ -11,7 +11,11 @@ This repo contains the AWS cloud resource definitions and code needed to create 
 
 ### Architecture Diagram
 
+There are many ways in which this can be done...here's my solution.
+
 ![URL shortener diagram](./docs/url-shortener-diagram.png)
+
+Another idea that I had was to see if this is possible with a CloudFront Distribution that uses a CloudFront functions and a CloudFront key value store.
 
 ## Instructions To Run
 
