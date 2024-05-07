@@ -24,29 +24,6 @@ export class AwsServerlessUrlShortenerStack extends Stack {
   }
 
   private buildResources() {
-    // Lambda Functions
-    const getFunction = new NodejsFunction(this, `${this.id}-get`, {
-      architecture: Architecture.ARM_64,
-      description: `Get function for ${this.id} stack`,
-      entry: 'src/get.ts',
-      functionName: `${this.id}-get`,
-      logRetention: RetentionDays.ONE_MONTH,
-      memorySize: 256,
-      runtime: Runtime.NODEJS_20_X,
-      timeout: Duration.seconds(30),
-    })
-
-    const postFunction = new NodejsFunction(this, `${this.id}-post`, {
-      architecture: Architecture.ARM_64,
-      description: `Post function for ${this.id} stack`,
-      entry: 'src/post.ts',
-      functionName: `${this.id}-post`,
-      logRetention: RetentionDays.ONE_MONTH,
-      memorySize: 256,
-      runtime: Runtime.NODEJS_20_X,
-      timeout: Duration.seconds(30),
-    })
-
     // DynamoDB Table
     const table = new TableV2(this, `${this.id}-table`, {
       globalSecondaryIndexes: [
@@ -58,6 +35,31 @@ export class AwsServerlessUrlShortenerStack extends Stack {
       partitionKey: { name: 'PK', type: AttributeType.STRING },
       removalPolicy: RemovalPolicy.DESTROY,
       tableName: `${this.id}-table`,
+    })
+
+    // Lambda Functions
+    const getFunction = new NodejsFunction(this, `${this.id}-get`, {
+      architecture: Architecture.ARM_64,
+      description: `Get function for ${this.id} stack`,
+      entry: 'src/get.ts',
+      functionName: `${this.id}-get`,
+      logRetention: RetentionDays.ONE_MONTH,
+      memorySize: 256,
+      runtime: Runtime.NODEJS_20_X,
+      timeout: Duration.seconds(30),
+      environment: { TABLE_NAME: table.tableName },
+    })
+
+    const postFunction = new NodejsFunction(this, `${this.id}-post`, {
+      architecture: Architecture.ARM_64,
+      description: `Post function for ${this.id} stack`,
+      entry: 'src/post.ts',
+      functionName: `${this.id}-post`,
+      logRetention: RetentionDays.ONE_MONTH,
+      memorySize: 256,
+      runtime: Runtime.NODEJS_20_X,
+      timeout: Duration.seconds(30),
+      environment: { TABLE_NAME: table.tableName },
     })
 
     // Lambda to DDB Permissions
