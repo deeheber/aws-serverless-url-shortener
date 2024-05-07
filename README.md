@@ -38,24 +38,47 @@ Get the URL for your API Gateway from the console output post deploy or from the
 
 There are two endpoints you can interact with using something like [curl](https://curl.se/) or [Postman](https://www.postman.com/)
 
-1. POST <URL>
+#### 1. POST <URL>
 
 This endpoint is used to create a new shortened URL. In the Body.url feed it the URL you'd like to shorten. This includes the http/https part of the URL.
 
-It will return the shortened version of the URL.
+Example body:
 
-2. GET <URL>/{shortId}
+```json
+{ "url": "https://github.com/" }
+```
+
+For best results include `http` or `https` portion of the URL.
+
+This endpoint returns the shortened version of the URL.
+
+#### 2. GET <URL>/{shortId}
 
 This endpoint is used to redirect a shortned URL to the long URL.
 
 If it does not exist in the DynamoDB table, a 404 error will be returned.
 
-### DynamoDB
+### DynamoDB Schema
 
-TODO add into about DDB main table + GSI schema
+#### Main Table Items
+
+1. PK: CurrentCount, CurrentCount: number
+2. PK: long URL, GSI: shortID
+
+#### GSI
+
+1. GSI: shortID (PK for this index), PK: long URL
 
 ### Cleanup
 
 If you want to delete the resources created by this project, run `npm run destroy`.
 
 Everything in this stack is considered Serverless, so unless you have a lot of usage and/or content in the DynamoDB table this will likely remain in the AWS free tier.
+
+## Improvements
+
+This should ideally take you pretty far, but there are some trade offs and limitations in the design.
+
+- Error handling for when multiple Lambdas update the CurrentCount at the same exact time (feels edge case, but possible)
+- Better randomization for the shortIDs - currently we have a counter in the DDB table and it is converted into a Base 62 (number of lowercase abc, uppercase ABC, and numbers 0 through 9) number to create the shortID
+- Set a TTL on the items, so shortIDs expire to not allow the DynamoDB Table to grow too large in size

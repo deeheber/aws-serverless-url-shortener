@@ -1,16 +1,14 @@
-import {
-  CfnOutput,
-  Duration,
-  RemovalPolicy,
-  Stack,
-  StackProps,
-} from 'aws-cdk-lib'
+import { Duration, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib'
 import { LambdaIntegration, RestApi } from 'aws-cdk-lib/aws-apigateway'
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs'
 import { AttributeType, TableV2 } from 'aws-cdk-lib/aws-dynamodb'
 import { Construct } from 'constructs'
 import { Architecture, Runtime } from 'aws-cdk-lib/aws-lambda'
 import { RetentionDays } from 'aws-cdk-lib/aws-logs'
+import {
+  AwsCustomResource,
+  AwsCustomResourcePolicy,
+} from 'aws-cdk-lib/custom-resources'
 
 export class AwsServerlessUrlShortenerStack extends Stack {
   constructor(
@@ -35,6 +33,25 @@ export class AwsServerlessUrlShortenerStack extends Stack {
       partitionKey: { name: 'PK', type: AttributeType.STRING },
       removalPolicy: RemovalPolicy.DESTROY,
       tableName: `${this.id}-table`,
+    })
+
+    // Init counter item and add to DDB table
+    new AwsCustomResource(this, 'initDBResource', {
+      onCreate: {
+        service: 'DynamoDB',
+        action: 'putItem',
+        parameters: {
+          TableName: table.tableName,
+          Item: {
+            PK: { S: 'CurrentCount' },
+            CurrentCount: { N: '10000' },
+          },
+        },
+        physicalResourceId: { id: 'initCounter' },
+      },
+      policy: AwsCustomResourcePolicy.fromSdkCalls({
+        resources: AwsCustomResourcePolicy.ANY_RESOURCE,
+      }),
     })
 
     // Lambda Functions
