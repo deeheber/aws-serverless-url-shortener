@@ -36,7 +36,7 @@ export class AwsServerlessUrlShortenerStack extends Stack {
     })
 
     // Init counter item and add to DDB table
-    new AwsCustomResource(this, 'initDBResource', {
+    new AwsCustomResource(this, 'initCounter', {
       onCreate: {
         service: 'DynamoDB',
         action: 'putItem',
